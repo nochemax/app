@@ -86,6 +86,7 @@ import org.thoughtcrime.securesms.util.disableClipping
 import org.thoughtcrime.securesms.util.push
 import org.thoughtcrime.securesms.util.show
 import org.thoughtcrime.securesms.util.start
+import org.thoughtcrime.securesms.ai.AIAgent
 import java.io.IOException
 import java.util.Calendar
 import java.util.Locale
@@ -109,6 +110,7 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var glide: RequestManager
+    private lateinit var aiAgent: AIAgent
 
     @Inject lateinit var threadDb: ThreadDatabase
     @Inject lateinit var mmsSmsDatabase: MmsSmsDatabase
@@ -152,6 +154,11 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
                 }
             else -> Log.d("Loki", "callback with model: $model")
         }
+
+        // Example interaction with AI Agent
+        val aiInput = "Hello, AI!"
+        val aiOutput = aiAgent.processInput(aiInput)
+        Toast.makeText(this, aiOutput, Toast.LENGTH_SHORT).show()
     }
 
     private val isFromOnboarding: Boolean get() = intent.getBooleanExtra(FROM_ONBOARDING, false)
@@ -168,6 +175,9 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
         setSupportActionBar(binding.toolbar)
         // Set up Glide
         glide = Glide.with(this)
+        // Initialize AI Agent
+        aiAgent = AIAgent()
+
         // Set up toolbar buttons
         binding.profileButton.setOnClickListener { openSettings() }
         binding.searchViewContainer.setOnClickListener {

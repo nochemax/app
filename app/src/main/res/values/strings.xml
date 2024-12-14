@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ai_agent_greeting">Hello, AI!</string>
+    <string name="ai_agent_response">Processed: %1$s</string>
+    <string name="ai_agent_generate">Generate something</string>
+    <string name="ai_agent_generated_response">Generated: %1$s</string>
+    <string name="ai_agent_empty_input">Processed: </string>
+    <string name="ai_agent_null_input">Processed: null</string>
 
 
 </resources>
