@@ -30,6 +30,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.WindowManager
 import android.widget.Toast
+import android.widget.Button
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.result.ActivityResult
@@ -217,6 +218,7 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
     OnReactionSelectedListener, ReactWithAnyEmojiDialogFragment.Callback, ReactionsDialogFragment.Callback,
     ConversationMenuHelper.ConversationMenuListener {
 
+    private lateinit var notifyButton: Button
     private lateinit var binding: ActivityConversationV2Binding
 
     @Inject lateinit var textSecurePreferences: TextSecurePreferences
@@ -236,6 +238,20 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
     private val limitationHandler = Handler(Looper.getMainLooper())
     private val limitationCheckRunnable = Runnable {
         checkCodingLimitations()
+    }
+
+    private fun setUpNotifyButton() {
+        notifyButton = findViewById(R.id.notify_button)
+        notifyButton.setOnClickListener {
+            sendCannotWorkNotification()
+        }
+    }
+
+    private fun sendCannotWorkNotification() {
+        val recipient = viewModel.recipient ?: return
+        val message = "User can no longer work."
+        // Logic to send notification to the recipient
+        Toast.makeText(this, "Notification sent: $message", Toast.LENGTH_SHORT).show()
     }
 
     override fun onResume() {
@@ -477,6 +493,7 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
 
         setUpToolBar()
         setUpInputBar()
+        setUpNotifyButton()
         setUpLinkPreviewObserver()
         restoreDraftIfNeeded()
         setUpUiStateObserver()

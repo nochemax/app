@@ -6,6 +6,7 @@
     <string name="ai_agent_generated_response">Generated: %1$s</string>
     <string name="ai_agent_empty_input">Processed: </string>
     <string name="ai_agent_null_input">Processed: null</string>
+    <string name="cannot_work_notification">User can no longer work.</string>
 
 
 </resources>
