@@ -9,6 +9,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.PluralsRes
@@ -110,6 +112,8 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var glide: RequestManager
+    private lateinit var timeHandler: Handler
+    private var startTime: Long = 0
     private lateinit var aiAgent: AIAgent
 
     @Inject lateinit var threadDb: ThreadDatabase
@@ -128,6 +132,17 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
 
     private val homeAdapter: HomeAdapter by lazy {
         HomeAdapter(context = this, configFactory = configFactory, listener = this, ::showMessageRequests, ::hideMessageRequests)
+    }
+
+    private fun updateElapsedTime() {
+        timeHandler.postDelayed({
+            val elapsedTime = System.currentTimeMillis() - startTime
+            val seconds = (elapsedTime / 1000) % 60
+            val minutes = (elapsedTime / (1000 * 60)) % 60
+            val hours = (elapsedTime / (1000 * 60 * 60)) % 24
+            binding.timeClockTextView.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            updateElapsedTime()
+        }, 1000)
     }
 
     private val globalSearchAdapter = GlobalSearchAdapter { model ->
@@ -178,7 +193,10 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
         // Initialize AI Agent
         aiAgent = AIAgent()
 
-        // Set up toolbar buttons
+        // Initialize time tracking
+        startTime = System.currentTimeMillis()
+        timeHandler = Handler(Looper.getMainLooper())
+        updateElapsedTime()
         binding.profileButton.setOnClickListener { openSettings() }
         binding.searchViewContainer.setOnClickListener {
             globalSearchViewModel.refresh()

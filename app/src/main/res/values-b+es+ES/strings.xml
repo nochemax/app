@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Translated strings from the issue description -->
+    <string name="notify_when_cannot_write_code">Notify me when you can no longer write code due to limitations.</string>
+    <string name="certify_remaining_project">Certify all remaining parts of the project according to the initial instructions.</string>
+    <string name="indicate_time_clock_location">Indicate where the time clock is located, showing how long you have been working.</string>
+</resources>

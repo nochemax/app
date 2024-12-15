@@ -30,6 +30,8 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.WindowManager
 import android.widget.Toast
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -230,6 +232,33 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
     @Inject lateinit var reactionDb: ReactionDatabase
     @Inject lateinit var viewModelFactory: ConversationViewModel.AssistedFactory
     @Inject lateinit var mentionViewModelFactory: MentionViewModel.AssistedFactory
+
+    private val limitationHandler = Handler(Looper.getMainLooper())
+    private val limitationCheckRunnable = Runnable {
+        checkCodingLimitations()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        limitationHandler.postDelayed(limitationCheckRunnable, 60000) // Check every minute
+    }
+
+    override fun onPause() {
+        super.onPause()
+        limitationHandler.removeCallbacks(limitationCheckRunnable)
+    }
+
+    private fun checkCodingLimitations() {
+        // Placeholder logic for checking limitations
+        val limitationsReached = false // Replace with actual logic
+        if (limitationsReached) {
+            notifyUserLimitationsReached()
+        }
+    }
+
+    private fun notifyUserLimitationsReached() {
+        Toast.makeText(this, R.string.notify_when_cannot_write_code, Toast.LENGTH_LONG).show()
+    }
 
     private val screenshotObserver by lazy {
         ScreenshotObserver(this, Handler(Looper.getMainLooper())) {
