@@ -220,6 +220,7 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
 
     private lateinit var notifyButton: Button
     private lateinit var binding: ActivityConversationV2Binding
+    private var messageCount: Int = 0
 
     @Inject lateinit var textSecurePreferences: TextSecurePreferences
     @Inject lateinit var threadDb: ThreadDatabase
@@ -494,8 +495,9 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
         setUpToolBar()
         setUpInputBar()
         setUpNotifyButton()
-        setUpLinkPreviewObserver()
+        setUpUiStateObserver()
         restoreDraftIfNeeded()
+        updateMessageCount()
         setUpUiStateObserver()
 
         binding.scrollToBottomButton.setOnClickListener {
@@ -651,6 +653,7 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
         val oldCount = adapter.itemCount
         val newCount = cursor?.count ?: 0
         adapter.changeCursor(cursor)
+        updateMessageCount()
 
         if (cursor != null) {
             val messageTimestamp = messageToScrollTimestamp.getAndSet(-1)
@@ -682,6 +685,7 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
 
     override fun onLoaderReset(cursor: Loader<Cursor>) {
         adapter.changeCursor(null)
+        updateMessageCount()
     }
 
     // called from onCreate
