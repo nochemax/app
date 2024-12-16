@@ -9,6 +9,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.PluralsRes
@@ -86,6 +88,7 @@ import org.thoughtcrime.securesms.util.disableClipping
 import org.thoughtcrime.securesms.util.push
 import org.thoughtcrime.securesms.util.show
 import org.thoughtcrime.securesms.util.start
+import org.thoughtcrime.securesms.ai.AIAgent
 import java.io.IOException
 import java.util.Calendar
 import java.util.Locale
@@ -109,6 +112,9 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var glide: RequestManager
+    private lateinit var timeHandler: Handler
+    private var startTime: Long = 0
+    private lateinit var aiAgent: AIAgent
 
     @Inject lateinit var threadDb: ThreadDatabase
     @Inject lateinit var mmsSmsDatabase: MmsSmsDatabase
@@ -126,6 +132,17 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
 
     private val homeAdapter: HomeAdapter by lazy {
         HomeAdapter(context = this, configFactory = configFactory, listener = this, ::showMessageRequests, ::hideMessageRequests)
+    }
+
+    private fun updateElapsedTime() {
+        timeHandler.postDelayed({
+            val elapsedTime = System.currentTimeMillis() - startTime
+            val seconds = (elapsedTime / 1000) % 60
+            val minutes = (elapsedTime / (1000 * 60)) % 60
+            val hours = (elapsedTime / (1000 * 60 * 60)) % 24
+            binding.timeClockTextView.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            updateElapsedTime()
+        }, 1000)
     }
 
     private val globalSearchAdapter = GlobalSearchAdapter { model ->
@@ -152,6 +169,11 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
                 }
             else -> Log.d("Loki", "callback with model: $model")
         }
+
+        // Example interaction with AI Agent
+        val aiInput = "Hello, AI!"
+        val aiOutput = aiAgent.processInput(aiInput)
+        Toast.makeText(this, aiOutput, Toast.LENGTH_SHORT).show()
     }
 
     private val isFromOnboarding: Boolean get() = intent.getBooleanExtra(FROM_ONBOARDING, false)
@@ -168,7 +190,13 @@ class HomeActivity : PassphraseRequiredActionBarActivity(),
         setSupportActionBar(binding.toolbar)
         // Set up Glide
         glide = Glide.with(this)
-        // Set up toolbar buttons
+        // Initialize AI Agent
+        aiAgent = AIAgent()
+
+        // Initialize time tracking
+        startTime = System.currentTimeMillis()
+        timeHandler = Handler(Looper.getMainLooper())
+        updateElapsedTime()
         binding.profileButton.setOnClickListener { openSettings() }
         binding.searchViewContainer.setOnClickListener {
             globalSearchViewModel.refresh()

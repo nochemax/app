@@ -30,6 +30,9 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.WindowManager
 import android.widget.Toast
+import android.widget.Button
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -215,7 +218,9 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
     OnReactionSelectedListener, ReactWithAnyEmojiDialogFragment.Callback, ReactionsDialogFragment.Callback,
     ConversationMenuHelper.ConversationMenuListener {
 
+    private lateinit var notifyButton: Button
     private lateinit var binding: ActivityConversationV2Binding
+    private var messageCount: Int = 0
 
     @Inject lateinit var textSecurePreferences: TextSecurePreferences
     @Inject lateinit var threadDb: ThreadDatabase
@@ -230,6 +235,47 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
     @Inject lateinit var reactionDb: ReactionDatabase
     @Inject lateinit var viewModelFactory: ConversationViewModel.AssistedFactory
     @Inject lateinit var mentionViewModelFactory: MentionViewModel.AssistedFactory
+
+    private val limitationHandler = Handler(Looper.getMainLooper())
+    private val limitationCheckRunnable = Runnable {
+        checkCodingLimitations()
+    }
+
+    private fun setUpNotifyButton() {
+        notifyButton = findViewById(R.id.notify_button)
+        notifyButton.setOnClickListener {
+            sendCannotWorkNotification()
+        }
+    }
+
+    private fun sendCannotWorkNotification() {
+        val recipient = viewModel.recipient ?: return
+        val message = "User can no longer work."
+        // Logic to send notification to the recipient
+        Toast.makeText(this, "Notification sent: $message", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        limitationHandler.postDelayed(limitationCheckRunnable, 60000) // Check every minute
+    }
+
+    override fun onPause() {
+        super.onPause()
+        limitationHandler.removeCallbacks(limitationCheckRunnable)
+    }
+
+    private fun checkCodingLimitations() {
+        // Placeholder logic for checking limitations
+        val limitationsReached = false // Replace with actual logic
+        if (limitationsReached) {
+            notifyUserLimitationsReached()
+        }
+    }
+
+    private fun notifyUserLimitationsReached() {
+        Toast.makeText(this, R.string.notify_when_cannot_write_code, Toast.LENGTH_LONG).show()
+    }
 
     private val screenshotObserver by lazy {
         ScreenshotObserver(this, Handler(Looper.getMainLooper())) {
@@ -448,8 +494,10 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
 
         setUpToolBar()
         setUpInputBar()
-        setUpLinkPreviewObserver()
+        setUpNotifyButton()
+        setUpUiStateObserver()
         restoreDraftIfNeeded()
+        updateMessageCount()
         setUpUiStateObserver()
 
         binding.scrollToBottomButton.setOnClickListener {
@@ -605,6 +653,7 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
         val oldCount = adapter.itemCount
         val newCount = cursor?.count ?: 0
         adapter.changeCursor(cursor)
+        updateMessageCount()
 
         if (cursor != null) {
             val messageTimestamp = messageToScrollTimestamp.getAndSet(-1)
@@ -636,6 +685,7 @@ class ConversationActivityV2 : PassphraseRequiredActionBarActivity(), InputBarDe
 
     override fun onLoaderReset(cursor: Loader<Cursor>) {
         adapter.changeCursor(null)
+        updateMessageCount()
     }
 
     // called from onCreate

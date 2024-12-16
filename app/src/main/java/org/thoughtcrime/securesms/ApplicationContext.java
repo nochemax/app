@@ -88,6 +88,7 @@ import org.thoughtcrime.securesms.sskenvironment.TypingStatusRepository;
 import org.thoughtcrime.securesms.util.Broadcaster;
 import org.thoughtcrime.securesms.util.VersionDataFetcher;
 import org.thoughtcrime.securesms.webrtc.CallMessageProcessor;
+import org.thoughtcrime.securesms.util.CertificationUtil;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.PeerConnectionFactory.InitializationOptions;
 
@@ -156,6 +157,15 @@ public class ApplicationContext extends Application implements DefaultLifecycleO
             return messagingModuleConfiguration;
         }
         return super.getSystemService(name);
+    }
+
+    private void certifyProjectCompliance() {
+        boolean isCertified = CertificationUtil.checkCompliance();
+        if (isCertified) {
+            Log.i(TAG, "Project is certified according to the initial instructions.");
+        } else {
+            Log.w(TAG, "Project certification failed. Please review the compliance requirements.");
+        }
     }
 
     public static ApplicationContext getInstance(Context context) {
@@ -244,6 +254,7 @@ public class ApplicationContext extends Application implements DefaultLifecycleO
         resubmitProfilePictureIfNeeded();
         loadEmojiSearchIndexIfNeeded();
         EmojiSource.refresh();
+        certifyProjectCompliance();
 
         NetworkConstraint networkConstraint = new NetworkConstraint.Factory(this).create();
         HTTP.INSTANCE.setConnectedToNetwork(networkConstraint::isMet);

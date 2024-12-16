@@ -53,6 +53,18 @@
         app:layout_constraintBottom_toTopOf="@+id/textSendAfterApproval"
         />
 
+    <Button
+        android:id="@+id/notify_button"
+        style="@style/Widget.Session.Button.Common.ProminentOutline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_spacing"
+        android:text="@string/cannot_work_notification"
+        android:contentDescription="@string/AccessibilityId_notify_button"
+        app:layout_constraintBottom_toTopOf="@+id/inputBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <org.thoughtcrime.securesms.conversation.v2.input_bar.InputBar
         android:id="@+id/inputBar"
         android:layout_width="match_parent"

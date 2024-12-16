@@ -215,7 +215,7 @@ class DefaultMessageNotifier : MessageNotifier {
             }
 
             try {
-                val notificationState = constructNotificationState(context, telcoCursor)
+                val notificationState = constructNotificationState(context, telcoCursor, pushCursor)
 
                 if (playNotificationAudio && (System.currentTimeMillis() - lastAudibleNotification) < MIN_AUDIBLE_PERIOD_MILLIS) {
                     playNotificationAudio = false
@@ -255,6 +255,12 @@ class DefaultMessageNotifier : MessageNotifier {
         context: Context,
         notificationState: NotificationState,
         signal: Boolean,
+        bundled: Boolean,
+        messageType: String = "default"
+    ) {
+        context: Context,
+        notificationState: NotificationState,
+        signal: Boolean,
         bundled: Boolean
     ) {
         Log.i(TAG, "sendSingleThreadNotification()  signal: $signal  bundled: $bundled")
@@ -265,7 +271,7 @@ class DefaultMessageNotifier : MessageNotifier {
             return
         }
 
-        val builder = SingleRecipientNotificationBuilder(context, getNotificationPrivacy(context))
+        val builder = SingleRecipientNotificationBuilder(context, getNotificationPrivacy(context), messageType)
         val notifications = notificationState.notifications
         val recipient = notifications[0].recipient
         val notificationId = (SUMMARY_NOTIFICATION_ID + (if (bundled) notifications[0].threadId else 0)).toInt()
@@ -356,6 +362,9 @@ class DefaultMessageNotifier : MessageNotifier {
         }
 
         val notification = builder.build()
+        if (messageType == "newType") {
+            // Customize notification for new message type
+        }
 
         // TODO - ACL to fix this properly & will do on 2024-08-26, but just skipping for now so review can start
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -456,9 +465,12 @@ class DefaultMessageNotifier : MessageNotifier {
         Log.i(TAG, "Posted notification. $notification")
     }
 
-    private fun constructNotificationState(context: Context, cursor: Cursor): NotificationState {
+    private fun constructNotificationState(context: Context, telcoCursor: Cursor, pushCursor: Cursor?): NotificationState {
         val notificationState = NotificationState()
-        val reader = get(context).mmsSmsDatabase().readerFor(cursor)
+        if (pushCursor != null) {
+            // Handle push notifications if necessary
+        }
+        val reader = get(context).mmsSmsDatabase().readerFor(telcoCursor)
         if (reader == null) {
             Log.e(TAG, "No reader for cursor - aborting constructNotificationState")
             return NotificationState()
