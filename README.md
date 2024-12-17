@@ -35,6 +35,20 @@ These steps will help you set up and run the application on an Nginx server effi
 5. **Verification**: Access the application via a web browser to ensure it is running correctly.
 
 By following these steps, you can efficiently deploy the application on an Nginx server.
+
+### Overview of Setup Process
+
+1. **Prerequisites**: Ensure you have a Debian 12 server with root access. You will need to install Python 3, Flask, and Nginx.
+
+2. **Installation**: Use `instrucción.txt` to guide you through installing necessary packages and configuring Nginx.
+
+3. **Configuration**: Modify the Nginx configuration to serve the Flask application securely using SSL.
+
+4. **Execution**: Make `servidor.py` executable and run it to start the Flask application.
+
+5. **Verification**: Access the application via a web browser to ensure it is running correctly.
+
+By following these steps, you can efficiently deploy the application on an Nginx server.
 # app
 
 ## Setting Up the Application on an Nginx Server
