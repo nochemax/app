@@ -1,4 +1,4 @@
-# instrucción.txt
+gue conel trabajo implementando el archivo de arranque del servidor python3 # instrucción.txt
 
 ## Instrucciones para Configurar la Aplicación en un Servidor Nginx en Debian 12
 
