@@ -1,5 +1,3 @@
-gue conel trabajo implementando el archivo de arranque del servidor python3 # instrucción.txt
-
 ## Instrucciones para Configurar la Aplicación en un Servidor Nginx en Debian 12
 
 Este documento proporciona instrucciones detalladas para instalar y configurar las dependencias necesarias para ejecutar la aplicación Session en un servidor Nginx en Debian 12.
@@ -76,7 +74,7 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
 - Acceda a `http://localhost` en su navegador para verificar que la aplicación esté funcionando correctamente.
 - Asegúrese de que Nginx esté redirigiendo correctamente las solicitudes al servidor Flask.
 
-Con estos pasos, su aplicación debería estar configurada y funcionando en un servidor Nginx en Debian 12.# instrucción.txt
+Con estos pasos, su aplicación debería estar configurada y funcionando en un servidor Nginx en Debian 12.
 
 ## Instrucciones para Configurar la Aplicación en un Servidor Nginx en Debian 12
 
