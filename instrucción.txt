@@ -16,7 +16,7 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
 
 3. **Instalar Flask:**
    ```bash
-   pip3 install flask
+   pip3 install flask gunicorn
    ```
 
 4. **Instalar Nginx:**
@@ -32,6 +32,9 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
      server {
          listen 80;
          server_name localhost;
+         listen 443 ssl;
+         ssl_certificate /etc/ssl/certs/your_cert.pem;
+         ssl_certificate_key /etc/ssl/private/your_key.pem;
 
          location / {
              proxy_pass http://127.0.0.1:5000;
@@ -40,6 +43,13 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
              proxy_set_header X-Forwarded-Proto $scheme;
          }
+     }
+
+     # Redirect HTTP to HTTPS
+     server {
+         listen 80;
+         server_name localhost;
+         return 301 https://$host$request_uri;
      }
      ```
 
@@ -55,7 +65,7 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
 
 ### 3. Colocación del ID de Usuario y Contraseña
 
-- El ID de usuario y la contraseña generados por la aplicación deben colocarse en un archivo seguro en el servidor. Se recomienda almacenarlos en un archivo de texto en el directorio `/etc/session_app/credentials.txt`.
+- El ID de usuario y la contraseña generados por la aplicación deben colocarse en un archivo seguro en el servidor. Se recomienda almacenarlos en un archivo de texto en el directorio `/etc/session_app/credentials.txt`. Asegúrese de que este archivo tenga permisos adecuados para proteger la información sensible.
 
 ### 4. Configuración Final
 
@@ -66,7 +76,7 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
 
 - Ejecute el archivo `servidor.py` para iniciar la aplicación:
   ```bash
-  ./servidor.py
+  gunicorn --certfile=/etc/ssl/certs/your_cert.pem --keyfile=/etc/ssl/private/your_key.pem -b 127.0.0.1:5000 servidor:app
   ```
 
 ### 5. Verificación
@@ -94,7 +104,7 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
 
 3. **Instalar Flask:**
    ```bash
-   pip3 install flask
+   pip3 install flask gunicorn
    ```
 
 4. **Instalar Nginx:**
@@ -133,7 +143,7 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
 
 ### 3. Colocación del ID de Usuario y Contraseña
 
-- El ID de usuario y la contraseña generados por la aplicación deben colocarse en un archivo seguro en el servidor. Se recomienda almacenarlos en un archivo de texto en el directorio `/etc/session_app/credentials.txt`.
+- El ID de usuario y la contraseña generados por la aplicación deben colocarse en un archivo seguro en el servidor. Se recomienda almacenarlos en un archivo de texto en el directorio `/etc/session_app/credentials.txt`. Asegúrese de que este archivo tenga permisos adecuados para proteger la información sensible.
 
 ### 4. Configuración Final
 
@@ -144,7 +154,7 @@ Este documento proporciona instrucciones detalladas para instalar y configurar l
 
 - Ejecute el archivo `servidor.py` para iniciar la aplicación:
   ```bash
-  ./servidor.py
+  gunicorn --certfile=/etc/ssl/certs/your_cert.pem --keyfile=/etc/ssl/private/your_key.pem -b 127.0.0.1:5000 servidor:app
   ```
 
 ### 5. Verificación
