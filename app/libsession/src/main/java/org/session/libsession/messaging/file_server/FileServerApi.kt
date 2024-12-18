@@ -76,14 +76,16 @@ object FileServerApi {
             it.body ?: throw Error.ParsingFailed
         }.fail { e ->
             when (e) {
-                // No need for the stack trace for HTTP errors
-                is HTTP.HTTPRequestFailedException -> Log.e("Loki", "File server request failed due to error: ${e.message}")
-                else -> Log.e("Loki", "File server request failed", e)
+                is HTTP.HTTPRequestFailedException -> Log.e("Loki", "File server request failed: ${e.message}")
+                else -> Log.e("Loki", "File server request encountered an unexpected error", e)
             }
         }
     }
 
     fun upload(file: ByteArray): Promise<Long, Exception> {
+        if (file.size > maxFileSize) {
+            return Promise.ofFail(Exception("File size exceeds the maximum limit of $maxFileSize bytes"))
+        }
         val request = Request(
             verb = HTTP.Verb.POST,
             endpoint = "file",
@@ -99,6 +101,8 @@ object FileServerApi {
             val id = json.getOrDefault("id", null)
             Log.d("Loki-FS", "File Upload Response hasId: $hasId of type: ${id?.javaClass}")
             (id as? String)?.toLong() ?: throw Error.ParsingFailed
+        }.fail { e ->
+            Log.e("Loki-FS", "File upload failed", e)
         }
     }
 

@@ -22,9 +22,10 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.pm.ShortcutInfoCompat;
@@ -353,8 +354,8 @@ public class ApplicationContext extends Application implements DefaultLifecycleO
         try {
             Class.forName("org.signal.aesgcmprovider.AesGcmCipher");
         } catch (ClassNotFoundException e) {
-            Log.e(TAG, "Failed to find AesGcmCipher class");
-            throw new ProviderInitializationException();
+            Log.e(TAG, "Failed to find AesGcmCipher class", e);
+            throw new ProviderInitializationException("AesGcmCipher class not found", e);
         }
 
         int aesPosition = Security.insertProviderAt(new AesGcmProvider(), 1);
@@ -413,12 +414,14 @@ public class ApplicationContext extends Application implements DefaultLifecycleO
         try {
             PeerConnectionFactory.initialize(InitializationOptions.builder(this).createInitializationOptions());
         } catch (UnsatisfiedLinkError e) {
-            Log.w(TAG, e);
+            Log.w(TAG, "WebRTC initialization failed", e);
         }
     }
 
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
+
     private void initializeBlobProvider() {
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
+        executorService.execute(() -> {
             BlobProvider.getInstance().onSessionStart(this);
         });
     }

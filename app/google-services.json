@@ -1,7 +1,7 @@
 {
   "project_info": {
     "project_number": "43512467490",
-    "firebase_url": "https://your-server-based-firebase-url.firebaseio.com",
+    "firebase_url": "https://loki-5a81e.firebaseio.com",
     "project_id": "loki-5a81e",
     "storage_bucket": "loki-5a81e.appspot.com"
   },
@@ -21,7 +21,7 @@
       ],
       "api_key": [
         {
-          "current_key": "YOUR_SERVER_BASED_API_KEY"
+          "current_key": "REPLACE_WITH_SECURE_API_KEY"
         }
       ],
       "services": {
