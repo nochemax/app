@@ -390,6 +390,7 @@
     <string name="errorCopyAndQuit">Скопировать ошибку и выйти</string>
     <string name="errorDatabase">Ошибка базы данных</string>
     <string name="errorUnknown">Произошла неизвестная ошибка.</string>
+    <string name="errorServerConnection">Ошибка подключения к серверу. Пожалуйста, проверьте ваше соединение и попробуйте снова.</string>
     <string name="failures">Сбои</string>
     <string name="file">Файл</string>
     <string name="files">Файлы</string>
@@ -813,6 +814,7 @@
     <string name="sessionPrivacy">Конфиденциальность</string>
     <string name="sessionRecoveryPassword">Пароль восстановления</string>
     <string name="sessionSettings">Настройки</string>
+    <string name="serverFeatureDescription">Эта функция требует подключения к серверу для корректной работы.</string>
     <string name="set">Установить</string>
     <string name="settingsRestartDescription">Вы должны перезапустить {app_name}, чтобы применить новые настройки.</string>
     <string name="share">Поделиться</string>

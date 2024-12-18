@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.milliseconds
 object FileServerApi {
 
     private const val serverPublicKey = "da21e1d886c6fbaea313f75298bd64aab03a97ce985b46bb2dad9f2089c8ee59"
-    const val server = "http://filev2.getsession.org"
+    const val server = "http://localhost:8080" // Updated to point to a local PC-based server setup
     const val maxFileSize = 10_000_000 // 10 MB
 
     sealed class Error(message: String) : Exception(message) {
@@ -72,18 +72,14 @@ object FileServerApi {
             HTTP.Verb.POST -> requestBuilder.post(createBody(request.body, request.parameters)!!)
             HTTP.Verb.DELETE -> requestBuilder.delete(createBody(request.body, request.parameters))
         }
-        return if (request.useOnionRouting) {
-            OnionRequestAPI.sendOnionRequest(requestBuilder.build(), server, serverPublicKey).map {
-                it.body ?: throw Error.ParsingFailed
-            }.fail { e ->
-                when (e) {
-                    // No need for the stack trace for HTTP errors
-                    is HTTP.HTTPRequestFailedException -> Log.e("Loki", "File server request failed due to error: ${e.message}")
-                    else -> Log.e("Loki", "File server request failed", e)
-                }
+        return OnionRequestAPI.sendOnionRequest(requestBuilder.build(), server, serverPublicKey).map {
+            it.body ?: throw Error.ParsingFailed
+        }.fail { e ->
+            when (e) {
+                // No need for the stack trace for HTTP errors
+                is HTTP.HTTPRequestFailedException -> Log.e("Loki", "File server request failed due to error: ${e.message}")
+                else -> Log.e("Loki", "File server request failed", e)
             }
-        } else {
-            Promise.ofFail(IllegalStateException("It's currently not allowed to send non onion routed requests."))
         }
     }
 

@@ -344,6 +344,7 @@
     <string name="errorCopyAndQuit">Copiar erro e saír</string>
     <string name="errorDatabase">Erro de base de datos</string>
     <string name="errorUnknown">Produciuse un erro descoñecido.</string>
+    <string name="errorServerConnection">Erro de conexión ao servidor. Por favor, comproba a túa conexión e tenta de novo.</string>
     <string name="failures">Erros</string>
     <string name="file">Ficheiro</string>
     <string name="files">Ficheiros</string>
@@ -693,6 +694,7 @@
     <string name="sessionPrivacy">Privacidade</string>
     <string name="sessionRecoveryPassword">Contrasinal de recuperación</string>
     <string name="sessionSettings">Axustes</string>
+    <string name="serverFeatureDescription">Esta función require conexión ao servidor para funcionar correctamente.</string>
     <string name="set">Establecer</string>
     <string name="settingsRestartDescription">Debes reiniciar {app_name} para aplicar a túa nova configuración.</string>
     <string name="share">Partillar</string>
