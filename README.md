@@ -1,6 +1,6 @@
 # app
 
-## Setting Up the Application on an Nginx Server
+# Setting Up the Application on an Nginx Server
 
 This project includes two important files for setting up the application on an Nginx server:
 
