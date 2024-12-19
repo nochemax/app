@@ -21,6 +21,8 @@ import org.session.libsession.snode.SnodeAPI
 import org.session.libsignal.utilities.PublicKeyValidation
 import org.session.libsignal.utilities.timeout
 import org.thoughtcrime.securesms.ui.GetString
+import org.python.util.PythonInterpreter
+import org.python.core.PyObject
 
 @HiltViewModel
 internal class NewMessageViewModel @Inject constructor(
@@ -36,12 +38,31 @@ internal class NewMessageViewModel @Inject constructor(
     private val _qrErrors = MutableSharedFlow<String>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     val qrErrors = _qrErrors.asSharedFlow()
 
+    private lateinit var aiAgent: PyObject
     private var loadOnsJob: Job? = null
+
+    init {
+        // Initialize Python interpreter and AI agent
+        PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
+        val interpreter = PythonInterpreter()
+        interpreter.exec("from ai_agent import AIAgent")
+        aiAgent = interpreter.eval("AIAgent()")
+    }
 
     override fun onChange(value: String) {
         loadOnsJob?.cancel()
         loadOnsJob = null
-        _state.update { it.copy(newMessageIdOrOns = value, isTextErrorColor = false, loading = false) }
+        val suggestions = getAISuggestions(value)
+        _state.update { it.copy(newMessageIdOrOns = value, isTextErrorColor = false, loading = false, aiSuggestions = suggestions) }
+    }
+
+    fun getAISuggestions(input: String): List<String> {
+        val processInputMethod = aiAgent.__getattr__("process_input")
+        val processedData = processInputMethod.__call__(PyObject(input)).toString()
+
+        val generateSuggestionsMethod = aiAgent.__getattr__("generate_suggestions")
+        val suggestions = generateSuggestionsMethod.__call__(PyObject(processedData)).toString()
+        return suggestions.split(",").map { it.trim() }
     }
 
     override fun onContinue() {
@@ -105,7 +126,8 @@ internal data class State(
     val newMessageIdOrOns: String = "",
     val isTextErrorColor: Boolean = false,
     val error: GetString? = null,
-    val loading: Boolean = false
+    val loading: Boolean = false,
+    val aiSuggestions: List<String> = emptyList()
 ) {
     val isNextButtonEnabled: Boolean get() = newMessageIdOrOns.isNotBlank()
 }
