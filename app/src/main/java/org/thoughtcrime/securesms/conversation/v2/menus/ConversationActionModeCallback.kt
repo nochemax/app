@@ -15,16 +15,34 @@ import org.thoughtcrime.securesms.database.model.MediaMmsMessageRecord
 import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.dependencies.DatabaseComponent
 import org.thoughtcrime.securesms.groups.OpenGroupManager
+import org.python.util.PythonInterpreter
+import org.python.core.PyObject
 
 class ConversationActionModeCallback(private val adapter: ConversationAdapter, private val threadID: Long,
     private val context: Context) : ActionMode.Callback {
     var delegate: ConversationActionModeCallbackDelegate? = null
+    private lateinit var aiAgent: PyObject
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
         val inflater = mode.menuInflater
         inflater.inflate(R.menu.menu_conversation_item_action, menu)
+        // Initialize Python interpreter and AI agent
+        PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
+        val interpreter = PythonInterpreter()
+        interpreter.exec("from ai_agent import AIAgent")
+        aiAgent = interpreter.eval("AIAgent()")
+
         updateActionModeMenu(menu)
         return true
+    }
+
+    // AI-driven categorization
+    menu.findItem(R.id.menu_context_ai_categorize).isVisible = selectedItems.isNotEmpty()
+
+    private fun analyzeMessagesWithAI(messages: Set<MessageRecord>): String {
+        val analyzeMethod = aiAgent.__getattr__("analyze_messages")
+        val messageContents = messages.joinToString(separator = " ") { it.body }
+        return analyzeMethod.__call__(PyObject(messageContents)).toString()
     }
 
     fun updateActionModeMenu(menu: Menu) {
@@ -48,6 +66,10 @@ class ConversationActionModeCallback(private val adapter: ConversationAdapter, p
             if (openGroup == null) { return allSentByCurrentUser || allReceivedByCurrentUser }
             if (allSentByCurrentUser) { return true }
             return OpenGroupManager.isUserModerator(context, openGroup.groupId, userPublicKey, blindedPublicKey)
+        }
+        R.id.menu_context_ai_categorize -> {
+            val analysisResult = analyzeMessagesWithAI(selectedItems)
+            delegate?.showAIAnalysisResult(analysisResult)
         }
 
         // Embedded function

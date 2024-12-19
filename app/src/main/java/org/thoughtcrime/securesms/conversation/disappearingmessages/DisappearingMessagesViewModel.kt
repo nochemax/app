@@ -27,6 +27,8 @@ import org.thoughtcrime.securesms.conversation.disappearingmessages.ui.toUiState
 import org.thoughtcrime.securesms.database.GroupDatabase
 import org.thoughtcrime.securesms.database.Storage
 import org.thoughtcrime.securesms.database.ThreadDatabase
+import org.python.util.PythonInterpreter
+import org.python.core.PyObject
 
 class DisappearingMessagesViewModel(
     private val threadId: Long,
@@ -41,6 +43,7 @@ class DisappearingMessagesViewModel(
     showDebugOptions: Boolean
 ) : AndroidViewModel(application), ExpiryCallbacks {
 
+    private lateinit var aiAgent: PyObject
     private val _event = Channel<Event>()
     val event = _event.receiveAsFlow()
 
@@ -57,6 +60,12 @@ class DisappearingMessagesViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, UiState())
 
     init {
+        // Initialize Python interpreter and AI agent
+        PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
+        val interpreter = PythonInterpreter()
+        interpreter.exec("from ai_agent import AIAgent")
+        aiAgent = interpreter.eval("AIAgent()")
+
         viewModelScope.launch {
             val expiryMode = storage.getExpirationConfiguration(threadId)?.expiryMode ?: ExpiryMode.NONE
             val recipient = threadDb.getRecipientForThreadId(threadId)
@@ -76,11 +85,17 @@ class DisappearingMessagesViewModel(
         }
     }
 
+    fun predictExpiryMode(): ExpiryMode {
+        val predictMethod = aiAgent.__getattr__("predict_expiry_mode")
+        val prediction = predictMethod.__call__().toString()
+        return ExpiryMode.valueOf(prediction)
+    }
+
     override fun setValue(value: ExpiryMode) = _state.update { it.copy(expiryMode = value) }
 
     override fun onSetClick() = viewModelScope.launch {
         val state = _state.value
-        val mode = state.expiryMode
+        val mode = state.expiryMode ?: predictExpiryMode()
         val address = state.address
         if (address == null || mode == null) {
             _event.send(Event.FAIL)
