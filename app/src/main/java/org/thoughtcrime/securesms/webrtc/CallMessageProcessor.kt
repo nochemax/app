@@ -29,6 +29,8 @@ import org.thoughtcrime.securesms.permissions.Permissions
 import org.thoughtcrime.securesms.service.WebRtcCallService
 import org.thoughtcrime.securesms.util.CallNotificationBuilder
 import org.webrtc.IceCandidate
+import org.python.util.PythonInterpreter
+import org.python.core.PyObject
 
 
 class CallMessageProcessor(private val context: Context, private val textSecurePreferences: TextSecurePreferences, lifecycle: Lifecycle, private val storage: StorageProtocol) {
@@ -51,7 +53,14 @@ class CallMessageProcessor(private val context: Context, private val textSecureP
         }
     }
 
+    private lateinit var aiAgent: PyObject
+
     init {
+        // Initialize Python interpreter and AI agent
+        PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
+        val interpreter = PythonInterpreter()
+        interpreter.exec("from ai_agent import AIAgent")
+        aiAgent = interpreter.eval("AIAgent()")
         lifecycle.coroutineScope.launch(IO) {
             while (isActive) {
                 val nextMessage = WebRtcUtils.SIGNAL_QUEUE.receive()
@@ -80,6 +89,10 @@ class CallMessageProcessor(private val context: Context, private val textSecureP
                     continue
                 }
 
+                // Use AI to predict call acceptance likelihood
+                val acceptanceLikelihood = predictCallAcceptanceLikelihood(sender)
+                Log.i("Loki", "Predicted call acceptance likelihood: $acceptanceLikelihood")
+
                 when (nextMessage.type) {
                     OFFER -> incomingCall(nextMessage)
                     ANSWER -> incomingAnswer(nextMessage)
@@ -90,6 +103,18 @@ class CallMessageProcessor(private val context: Context, private val textSecureP
                 }
             }
         }
+    }
+
+    private fun predictCallAcceptanceLikelihood(sender: String): Double {
+        val predictMethod = aiAgent.__getattr__("predict_call_acceptance")
+        val likelihood = predictMethod.__call__(PyObject(sender)).toString().toDouble()
+        return likelihood
+    }
+
+    private fun suggestCallTimes(): List<String> {
+        val suggestMethod = aiAgent.__getattr__("suggest_call_times")
+        val suggestions = suggestMethod.__call__().toString()
+        return suggestions.split(",").map { it.trim() }
     }
 
     private fun insertMissedCall(sender: String, sentTimestamp: Long) {

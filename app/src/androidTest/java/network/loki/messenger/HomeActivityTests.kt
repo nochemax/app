@@ -29,6 +29,8 @@ import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
+import org.python.util.PythonInterpreter
+import org.python.core.PyObject
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.session.libsession.messaging.sending_receiving.link_preview.LinkPreview
@@ -54,8 +56,15 @@ class HomeActivityTests {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
+    private lateinit var aiAgent: PyObject
+
     @Before
     fun setUp() {
+        // Initialize Python interpreter and AI agent
+        PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
+        val interpreter = PythonInterpreter()
+        interpreter.exec("from ai_agent import AIAgent")
+        aiAgent = interpreter.eval("AIAgent()")
         InstrumentationRegistry.getInstrumentation().addMonitor(activityMonitor)
     }
 
@@ -175,6 +184,24 @@ class HomeActivityTests {
         onView(withText(dialogPromptText)).check(matches(isDisplayed()))
     }*/
 
+
+    @Test
+    fun testAIInteraction() {
+        // Simulate sending input to the AI agent
+        val input = "Hello, AI!"
+        val processInputMethod = aiAgent.__getattr__("process_input")
+        val processedData = processInputMethod.__call__(PyObject(input)).toString()
+
+        // Check if the processed data is as expected
+        assert(processedData == "hello, ai!")
+
+        // Simulate generating a response from the AI agent
+        val generateResponseMethod = aiAgent.__getattr__("generate_response")
+        val response = generateResponseMethod.__call__(PyObject(processedData)).toString()
+
+        // Check if the response is as expected
+        assert(response == "AI Response: hello, ai!")
+    }
 
     /**
      * Perform action of waiting for a specific time.

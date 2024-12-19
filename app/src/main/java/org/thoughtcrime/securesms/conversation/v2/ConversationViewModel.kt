@@ -34,6 +34,8 @@ import org.thoughtcrime.securesms.database.Storage
 import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord
 import org.thoughtcrime.securesms.groups.OpenGroupManager
+import org.python.util.PythonInterpreter
+import org.python.core.PyObject
 import org.thoughtcrime.securesms.repository.ConversationRepository
 import java.util.UUID
 
@@ -54,6 +56,11 @@ class ConversationViewModel(
 
     private var _recipient: RetrieveOnce<Recipient> = RetrieveOnce {
         repository.maybeGetRecipientForThreadId(threadId)
+    }
+
+    fun sendInputToAI(input: String) {
+        val response = processInputWithAI(input)
+        showMessage("AI: $response")
     }
     val expirationConfiguration: ExpirationConfiguration?
         get() = storage.getExpirationConfiguration(threadId)
@@ -103,7 +110,14 @@ class ConversationViewModel(
         scope = viewModelScope,
     )
 
+    private lateinit var aiAgent: PyObject
+
     init {
+        // Initialize Python interpreter and AI agent
+        PythonInterpreter.initialize(System.getProperties(), System.getProperties(), arrayOf())
+        val interpreter = PythonInterpreter()
+        interpreter.exec("from ai_agent import AIAgent")
+        aiAgent = interpreter.eval("AIAgent()")
         viewModelScope.launch(Dispatchers.IO) {
             repository.recipientUpdateFlow(threadId)
                 .collect { recipient ->
@@ -140,6 +154,14 @@ class ConversationViewModel(
 
         // Stop all voice message when exiting this page
         AudioSlidePlayer.stopAll()
+    }
+
+    fun processInputWithAI(input: String): String {
+        val processInputMethod = aiAgent.__getattr__("process_input")
+        val processedData = processInputMethod.__call__(PyObject(input)).toString()
+
+        val generateResponseMethod = aiAgent.__getattr__("generate_response")
+        return generateResponseMethod.__call__(PyObject(processedData)).toString()
     }
 
     fun saveDraft(text: String) {
