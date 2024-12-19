@@ -380,6 +380,7 @@
     <string name="errorCopyAndQuit">Kopyahin ang Error at Umalis</string>
     <string name="errorDatabase">Error sa Database</string>
     <string name="errorUnknown">May naganap na di-kilalang error.</string>
+    <string name="errorServerConnection">Error sa koneksyon sa server. Pakisuri ang iyong koneksyon at subukang muli.</string>
     <string name="failures">Mga Nabigo</string>
     <string name="file">File</string>
     <string name="files">Mga File</string>
@@ -787,6 +788,7 @@
     <string name="sessionPrivacy">Privacy</string>
     <string name="sessionRecoveryPassword">Recovery Password</string>
     <string name="sessionSettings">Mga Settings</string>
+    <string name="serverFeatureDescription">Kinakailangan ng feature na ito ang koneksyon sa server upang gumana nang maayos.</string>
     <string name="set">Itakda</string>
     <string name="settingsRestartDescription">Dapat mong i-restart ang {app_name} upang ipatupad ang iyong mga bagong setting.</string>
     <string name="share">I-share</string>

@@ -379,6 +379,7 @@
     <string name="errorCopyAndQuit">Errorea kopiatu eta irten</string>
     <string name="errorDatabase">Data-base errorea</string>
     <string name="errorUnknown">Errore ezezagun bat gertatu da.</string>
+    <string name="errorServerConnection">Errorea zerbitzariarekin konexioan. Mesedez, egiaztatu zure konexioa eta saiatu berriro.</string>
     <string name="failures">Hutsegiteak</string>
     <string name="file">Fitxategia</string>
     <string name="files">Fitxategiak</string>
@@ -786,6 +787,7 @@
     <string name="sessionPrivacy">Pribatutasuna</string>
     <string name="sessionRecoveryPassword">Berreskuratze Pasahitza</string>
     <string name="sessionSettings">Ezarpenak</string>
+    <string name="serverFeatureDescription">Funtzio honek zerbitzariarekin konexioa behar du behar bezala funtzionatzeko.</string>
     <string name="set">Ezarri</string>
     <string name="settingsRestartDescription">{app_name} berrabiarazi behar duzu zure ezarpen berriak aplikatzeko.</string>
     <string name="share">Partekatu</string>

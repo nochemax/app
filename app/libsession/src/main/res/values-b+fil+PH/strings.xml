@@ -379,6 +379,7 @@
     <string name="errorCopyAndQuit">Kopyahin ang Error at Umalis</string>
     <string name="errorDatabase">Database error</string>
     <string name="errorUnknown">May naganap na hindi kilalang error.</string>
+    <string name="errorServerConnection">Error sa koneksyon sa server. Pakisuri ang iyong koneksyon at subukang muli.</string>
     <string name="failures">Mga pagkabigo</string>
     <string name="file">File</string>
     <string name="files">Mga Talaksan</string>
@@ -786,6 +787,7 @@
     <string name="sessionPrivacy">Pribado</string>
     <string name="sessionRecoveryPassword">Password sa Pag-recover</string>
     <string name="sessionSettings">Mga Settings</string>
+    <string name="serverFeatureDescription">Kinakailangan ng feature na ito ang koneksyon sa server upang gumana nang maayos.</string>
     <string name="set">Itakda</string>
     <string name="settingsRestartDescription">Dapat mong i-restart ang {app_name} upang ilapat ang iyong bagong mga setting.</string>
     <string name="share">I-share</string>
