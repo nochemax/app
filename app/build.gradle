@@ -243,6 +243,8 @@ android {
 }
 
 dependencies {
+    implementation 'org.python:jython-standalone:2.7.2'
+    implementation 'org.eclipse.jetty:jetty-server:9.4.44.v20210927'
     implementation project(':content-descriptions')
 
     ksp("androidx.hilt:hilt-compiler:$jetpackHiltVersion")
